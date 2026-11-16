@@ -10,7 +10,7 @@ Semua isi ada di **`assets/js/config.js`**: nama mempelai, orang tua, tanggal, a
 | --- | --- |
 | Nama, orang tua, Instagram | `couple` |
 | Tanggal hitung mundur | `date` |
-| Akad, resepsi, alamat, tautan peta | `events` |
+| Sakramen Perkawinan, resepsi, alamat, tautan peta | `events` |
 | Foto mempelai, foto pembuka, galeri | `couple.*.photo`, `photos.cover`, `photos.gallery` (taruh berkas di `assets/img/`) |
 | Rekening dan alamat kado | `gifts` |
 | Musik | `music.src` (kosong = denting gamelan yang dibangkitkan di peramban) |
