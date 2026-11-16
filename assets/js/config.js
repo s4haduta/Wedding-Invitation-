@@ -14,21 +14,21 @@ window.INVITATION = {
   couple: {
     // Urutan tampil: "first" lalu "second"
     first: {
-      nick: 'Raka',
-      full: 'Raka Aditya Pratama, S.T.',
+      nick: 'Tegar',
+      full: 'Tegar' /* ganti dengan nama lengkap */,
       childOf: 'Putra pertama dari',
-      father: 'Bapak H. Suryo Pratama',
-      mother: 'Ibu Hj. Retno Wulandari',
-      instagram: 'rakaaditya',
+      father: 'Bapak (nama ayah)',
+      mother: 'Ibu (nama ibu)',
+      instagram: '',
       photo: ''
     },
     second: {
-      nick: 'Nadira',
-      full: 'Nadira Ayu Kirana, S.Psi.',
+      nick: 'Mourine',
+      full: 'Mourine' /* ganti dengan nama lengkap */,
       childOf: 'Putri kedua dari',
-      father: 'Bapak Ir. Bambang Hermawan',
-      mother: 'Ibu Sri Lestari',
-      instagram: 'nadirakirana',
+      father: 'Bapak (nama ayah)',
+      mother: 'Ibu (nama ibu)',
+      instagram: '',
       photo: ''
     }
   },
@@ -86,12 +86,12 @@ window.INVITATION = {
   gifts: {
     note: 'Doa restu Anda adalah hadiah yang paling berarti. Bila ingin memberi tanda kasih, dapat melalui:',
     accounts: [
-      { bank: 'BCA', number: '1234567890', holder: 'Raka Aditya Pratama' },
-      { bank: 'Bank Mandiri', number: '1370012345678', holder: 'Nadira Ayu Kirana' }
+      { bank: 'BCA', number: '1234567890', holder: 'Tegar' },
+      { bank: 'Bank Mandiri', number: '1370012345678', holder: 'Mourine' }
     ],
     address: {
       label: 'Kirim kado',
-      recipient: 'Nadira Ayu Kirana',
+      recipient: 'Mourine',
       text: 'Jl. Kenanga No. 8, Condongcatur, Sleman, DI Yogyakarta 55283'
     }
   },
