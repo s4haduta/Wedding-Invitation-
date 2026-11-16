@@ -9,7 +9,7 @@ window.INVITATION = {
   timeZoneLabel: 'WIB',
 
   // Waktu yang dipakai hitung mundur (format ISO, +07:00 = WIB)
-  date: '2027-02-20T08:00:00+07:00',
+  date: '2027-02-20T09:00:00+07:00',
 
   couple: {
     // Urutan tampil: "first" lalu "second"
@@ -40,28 +40,28 @@ window.INVITATION = {
   },
 
   opening: {
-    salam: 'Assalamu’alaikum Warahmatullahi Wabarakatuh',
-    intro: 'Dengan memohon rahmat dan rida Allah Subhanahu wa Ta’ala, kami bermaksud menyelenggarakan pernikahan putra-putri kami.'
+    salam: 'Salam damai dalam Kristus',
+    intro: 'Dengan penuh syukur atas kasih karunia Tuhan Yesus Kristus, kami mengundang Anda untuk hadir dan menjadi saksi saat kami saling menerimakan Sakramen Perkawinan.'
   },
 
   quote: {
-    text: 'Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan sayang.',
-    source: 'QS. Ar-Rum: 21'
+    text: 'Demikianlah mereka bukan lagi dua, melainkan satu. Karena itu, apa yang telah dipersatukan Allah, tidak boleh diceraikan manusia.',
+    source: 'Matius 19:6'
   },
 
   events: [
     {
-      name: 'Akad Nikah',
-      start: '2027-02-20T08:00:00+07:00',
-      end: '2027-02-20T10:00:00+07:00',
-      venue: 'Pendopo Agung Nusantara',
-      address: 'Jl. Melati No. 21, Sleman, Daerah Istimewa Yogyakarta',
+      name: 'Sakramen Perkawinan',
+      start: '2027-02-20T09:00:00+07:00',
+      end: '2027-02-20T11:00:00+07:00',
+      venue: 'Gereja Katolik (nama paroki)',
+      address: '(alamat gereja)',
       mapUrl: '' // kosong = otomatis mencari nama tempat + alamat di Google Maps
     },
     {
       name: 'Resepsi',
-      start: '2027-02-20T11:00:00+07:00',
-      end: '2027-02-20T14:00:00+07:00',
+      start: '2027-02-20T12:00:00+07:00',
+      end: '2027-02-20T15:00:00+07:00',
       venue: 'Pendopo Agung Nusantara',
       address: 'Jl. Melati No. 21, Sleman, Daerah Istimewa Yogyakarta',
       mapUrl: ''
@@ -72,7 +72,7 @@ window.INVITATION = {
     { year: '2019', title: 'Pertama bertemu', text: 'Kami dipertemukan di kepanitiaan kampus. Satu divisi, satu meja rapat, dan banyak malam lembur menyusun acara.' },
     { year: '2021', title: 'Mulai berjalan bersama', text: 'Setelah wisuda, kami memutuskan untuk saling menemani, walau harus terpisah kota karena pekerjaan.' },
     { year: '2026', title: 'Lamaran', text: 'Di hadapan kedua keluarga, kami mengikat janji untuk melangkah ke jenjang yang lebih serius.' },
-    { year: '2027', title: 'Hari pernikahan', text: 'Dengan izin Allah, kami memulai rumah tangga dan memohon doa restu dari Anda.' }
+    { year: '2027', title: 'Hari pernikahan', text: 'Dengan berkat Tuhan, kami memulai hidup berkeluarga dan memohon doa restu dari Anda.' }
   ],
 
   rsvp: {
@@ -98,7 +98,7 @@ window.INVITATION = {
 
   closing: {
     text: 'Merupakan kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu.',
-    salam: 'Wassalamu’alaikum Warahmatullahi Wabarakatuh',
+    salam: 'Tuhan memberkati',
     from: 'Kami yang berbahagia'
   },
 

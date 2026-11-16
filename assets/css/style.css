@@ -219,7 +219,10 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .count__done { font: italic 500 18px/1.4 var(--f-display); color: var(--prada-soft); }
 
 .quote { display: flex; flex-direction: column; gap: 14px; max-width: 32em; margin-top: 56px; }
-.quote::before { content: "\201C"; font: 400 72px/1 var(--f-display); color: var(--prada); margin-bottom: -38px; }
+.quote::before { /* salib */
+  content: ""; align-self: center; width: 16px; height: 26px; margin-bottom: 6px;
+  background: linear-gradient(var(--prada), var(--prada)) 50% 0 / 2px 100% no-repeat, linear-gradient(var(--prada), var(--prada)) 0 30% / 100% 2px no-repeat;
+}
 .quote p { font: italic 400 18px/1.65 var(--f-display); color: #e4e2da; text-wrap: pretty; }
 .quote cite { font: 600 11px/1 var(--f-body); letter-spacing: .28em; text-transform: uppercase; color: var(--prada); }
 
