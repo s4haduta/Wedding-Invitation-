@@ -333,33 +333,54 @@
   /* ---------- musik ---------- */
   var Music = (function () {
     var btn = $('#musicBtn'), playing = false;
-    var audio, ctx, master, timer, nextT = 0, beat = 0;
-    // Canon in D (Johann Pachelbel, domain publik), diaransemen untuk kotak musik dan harpa.
-    // Satu putaran = 8 akor x 8 not perenambelasan. Tiap variasi ditulis sebagai [nada MIDI, panjang].
-    var BASS = [50, 45, 47, 42, 43, 38, 43, 45];
-    var TRIAD = [[62, 66, 69], [57, 61, 64], [59, 62, 66], [54, 57, 61], [55, 59, 62], [62, 66, 69], [55, 59, 62], [57, 61, 64]];
-    function line(notes) { // ubah daftar [nada, panjang] menjadi peta langkah -> not
-      var map = {}, at = 0;
-      notes.forEach(function (n) { map[at] = n; at += n[1]; });
-      return map;
-    }
-    function each(list, len) { return list.map(function (m) { return [m, len]; }); }
-    var V1 = line(each([78, 76, 74, 73, 71, 69, 71, 73], 8));
-    var V2 = line(each([74, 73, 71, 69, 67, 66, 67, 64], 8));
-    var V3 = line(each([74, 78, 81, 79, 78, 74, 78, 76, 74, 71, 74, 81, 79, 83, 81, 79], 4));
-    var V4 = line([
-      [81, 2], [78, 1], [79, 1], [81, 2], [78, 1], [79, 1], [81, 1], [69, 1], [71, 1], [73, 1], [74, 1], [76, 1], [78, 1], [79, 1],
-      [78, 2], [74, 1], [76, 1], [78, 2], [66, 1], [67, 1], [69, 1], [71, 1], [69, 1], [67, 1], [69, 1], [66, 1], [67, 1], [69, 1],
-      [67, 2], [71, 1], [69, 1], [67, 2], [66, 1], [64, 1], [66, 1], [64, 1], [62, 1], [64, 1], [66, 1], [67, 1], [69, 1], [71, 1],
-      [67, 2], [71, 1], [69, 1], [71, 2], [73, 1], [74, 1], [69, 1], [71, 1], [73, 1], [74, 1], [76, 1], [78, 1], [79, 1], [81, 1]
-    ]);
-    // urutan putaran: iringan saja, tema, tema berdua, variasi seperempatan, variasi lincah, lalu kembali ke tema
-    var ROUNDS = [[], [V1], [V1, V2], [V3, V2], [V4], [V4, V1], [V3]];
+    var audio, ctx, master, timer, cursor = 0, origin = 0;
+    // Wedding March (Felix Mendelssohn, Op. 61; domain publik), dari transkripsi organ Théodore Dubois.
+    // Tiap entri: [panjang dalam ketukan, daftar nada MIDI (melodi di akhir) atau 0 untuk diam].
+    var Q = 60 / 100, T = 1 / 3;
+    function trip(ch) { return [[T, ch], [T, ch], [T, ch]]; }
+    var C1 = [72], C2 = [72, 76], C3 = [72, 76, 79];
+    var INTRO = [[3, 0]].concat(trip(C1), [[2, C1], [1, 0]], trip(C1), [[2, C1], [1, 0]], trip(C1),
+      [[1, C2]], trip(C2), [[1, C2]], trip(C2), [[1, C3]], trip(C3), [[1, C3]], trip(C3));
+    var A12 = [[2, [72, 76, 78, 84]], [1.5, [71, 75, 78, 83]], [.5, [71, 75, 78]],
+      [1, [71, 75, 78, 81]], [1, [71, 76, 79]], [1, [69, 74, 77]], [1, [69, 74]]];
+    var A_RH = A12.concat([[2, [67, 72]], [1, [67, 74]], [.75, [67]], [.25, [74]],
+      [1, [67, 72, 76]], [1.5, 0], [.5, [72]], [.5, [76]], [.5, [79]]], A12,
+      [[2, [67, 72]], [1, [72, 76]], [.75, [67, 71, 74]], [.25, [76]], [2, [67, 71, 74]], [1, [67, 72]], [1, 0]]);
+    var A_B12 = [[2, [45]], [1.5, [47]], [.5, [47]], [2, [52]], [1, [53]], [1, [53]]];
+    var A_BASS = A_B12.concat([[2, [43]], [2, [55]], [1, [48]], [3, 0]], A_B12, [[2, [43]], [1, [55]], [1, [43]], [2, [43]], [1, [48]], [1, 0]]);
+    var B2 = [[1, [79, 84, 88]], [1, [77, 83, 86]], [1, [74, 77, 83]], [1, [71, 77, 79]]];
+    var B_RH = [[2, [76, 79, 84]], [1.5, [76, 79, 84]], [.5, [76, 79, 84]]].concat(B2,
+      [[1.5, [72, 76, 79]], [.5, [76, 79, 84]], [1.5, [76, 79, 84]], [.5, [79, 84, 88]]], B2,
+      [[1.5, [72, 76, 79]], [.5, [79, 84, 88]], [1.5, [79, 84, 88]], [.5, [84, 88, 91]],
+        [2, [81, 84, 88, 91]], [1, [81, 86, 89]], [1, [81, 84, 88]],
+        [1, [81, 84, 86]], [.75, [81, 85]], [.25, [88]], [1, [81, 86]], [.75, [74, 81]], [.25, [84]],
+        [1, [74, 79, 83]], [1, [79]], [1, [81]], [1, [83]]]);
+    var B_BASS = [[2, [48]], [1.5, [48]], [.5, [48]], [3, [43]], [1, [43]], [1, [48]], [1, [48]], [1, [52]], [1, [48]],
+      [3, [43]], [1, [55]], [1, [48]], [1, [55]], [1, [52]], [1, [48]], [3, [41]], [1, [41]],
+      [1, [41]], [1, [53]], [1, [54]], [1, [42]], [1, [43]], [3, 0]];
+    // susunan: fanfare, lalu tema - tema - bagian tengah - tema, berulang tanpa fanfare
+    var SONG = (function () {
+      var ev = [], at = 0, loopFrom = 0;
+      function add(rh, bass) {
+        var end = at;
+        [rh, bass].forEach(function (voice, v) {
+          var t = at;
+          (voice || []).forEach(function (e) { if (e[1]) ev.push([t, e[0], e[1], v]); t += e[0]; });
+          end = Math.max(end, t);
+        });
+        at = end;
+      }
+      add(INTRO); loopFrom = at;
+      add(A_RH, A_BASS); add(A_RH, A_BASS); add(B_RH, B_BASS); add(A_RH, A_BASS);
+      ev.sort(function (a, b) { return a[0] - b[0]; });
+      var first = 0; while (ev[first][0] < loopFrom) first++;
+      return { ev: ev, first: first, loopLen: at - loopFrom };
+    })();
     function hz(m) { return 440 * Math.pow(2, (m - 69) / 12); }
-    function note(type, f, t, vol, dur, partials) {
-      (partials || [[1, 1]]).forEach(function (p) {
+    function note(f, t, vol, dur, partials) {
+      partials.forEach(function (p) {
         var o = ctx.createOscillator(), g = ctx.createGain();
-        o.type = type; o.frequency.value = f * p[0];
+        o.type = 'sine'; o.frequency.value = f * p[0];
         g.gain.setValueAtTime(0.0001, t);
         g.gain.exponentialRampToValueAtTime(vol * p[1], t + 0.012);
         g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
@@ -368,17 +389,15 @@
       });
     }
     function schedule() {
-      var STEP = 60 / 66 / 4;
-      while (nextT < ctx.currentTime + 0.5) {
-        var s = beat % 64, chord = Math.floor(s / 8), i = s % 8, round = Math.floor(beat / 64), t = nextT;
-        var voices = ROUNDS[round < ROUNDS.length ? round : 1 + (round - 1) % (ROUNDS.length - 1)];
-        if (i === 0) note('sine', hz(BASS[chord]), t, 0.34, STEP * 9);                              // bas
-        if (i % 2 === 0) note('triangle', hz(TRIAD[chord][[0, 1, 2, 1][i / 2]]), t, 0.06, 0.7);      // harpa
-        voices.forEach(function (v, k) {
-          var n = v[s];
-          if (n) note('sine', hz(n[0]), t, k ? 0.09 : 0.17, Math.max(0.9, n[1] * STEP * 1.25), [[1, 1], [2, .28], [4, .06]]);
+      for (;;) {
+        var e = SONG.ev[cursor], t = origin + e[0] * Q;
+        if (t > ctx.currentTime + 0.5) break;
+        var len = Math.max(0.45, e[1] * Q * 1.3);
+        e[2].forEach(function (m, k) {
+          if (e[3]) note(hz(m), t, 0.26, len, [[1, 1], [2, .5]]);                                           // bas
+          else note(hz(m), t, k === e[2].length - 1 ? 0.15 : 0.05, len, [[1, 1], [2, .28], [4, .06]]);     // melodi dan akor
         });
-        beat++; nextT += STEP;
+        if (++cursor >= SONG.ev.length) { cursor = SONG.first; origin += SONG.loopLen * Q; }
       }
     }
     function startSynth() {
@@ -393,7 +412,7 @@
         master.connect(delay); delay.connect(lp); lp.connect(fb); fb.connect(delay); lp.connect(ctx.destination);
       }
       ctx.resume();
-      nextT = ctx.currentTime + 0.15;
+      origin = ctx.currentTime + 0.15 - SONG.ev[cursor][0] * Q;
       master.gain.cancelScheduledValues(ctx.currentTime);
       master.gain.setTargetAtTime(0.5, ctx.currentTime, 0.8);
       clearInterval(timer); timer = setInterval(schedule, 120); schedule();

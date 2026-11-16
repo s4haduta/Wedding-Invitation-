@@ -13,7 +13,7 @@ Semua isi ada di **`assets/js/config.js`**: nama mempelai, orang tua, tanggal, a
 | Sakramen Perkawinan, resepsi, alamat, tautan peta | `events` |
 | Foto mempelai, foto pembuka, galeri | `couple.*.photo`, `photos.cover`, `photos.gallery` (taruh berkas di `assets/img/`) |
 | Rekening dan alamat kado | `gifts` |
-| Musik | `music.src` (kosong = Canon in D karya Pachelbel, dimainkan peramban) |
+| Musik | `music.src` (kosong = Wedding March karya Mendelssohn, dimainkan peramban) |
 | Judul dan pratinjau saat tautan dibagikan | tag `<title>` dan `og:*` di `index.html` |
 
 Bagian galeri otomatis tersembunyi selama `photos.gallery` kosong. Bingkai foto mempelai menampilkan inisial selama `photo` kosong.
