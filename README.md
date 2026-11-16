@@ -1,6 +1,15 @@
 # Undangan Pernikahan Digital
 
-Undangan satu halaman, tanpa framework dan tanpa proses build. Buka `index.html` atau unggah seluruh folder ke hosting statis mana pun (GitHub Pages, Netlify, Vercel, cPanel).
+Undangan satu halaman, tanpa framework dan tanpa proses build. Unggah seluruh folder ke hosting statis mana pun (GitHub Pages, Netlify, Vercel, cPanel).
+
+Ada dua versi, masing-masing berdiri sendiri di foldernya:
+
+| Folder | Versi |
+| --- | --- |
+| `v1/` | Batik Nila: kain batik nila berprada emas, musik Wedding March |
+| `v2/` | Pergelaran Wayang: nuansa Jawa dengan gunungan, sepasang wayang, batik truntum, aksara Jawa, dan gamelan |
+
+`index.html` di akar hanya halaman pemilih versi. Kalau sudah memutuskan, cukup unggah isi satu folder versi saja. Semua path di bawah ini relatif terhadap folder versi (mis. `v2/assets/js/config.js`).
 
 ## Mengganti isi
 
@@ -13,7 +22,8 @@ Semua isi ada di **`assets/js/config.js`**: nama mempelai, orang tua, tanggal, a
 | Sakramen Perkawinan, resepsi, alamat, tautan peta | `events` |
 | Foto mempelai, foto pembuka, galeri | `couple.*.photo`, `photos.cover`, `photos.gallery` (taruh berkas di `assets/img/`) |
 | Rekening dan alamat kado | `gifts` |
-| Musik | `music.src` (kosong = Wedding March karya Mendelssohn, dimainkan peramban) |
+| Musik | `music.src` (kosong = musik bawaan yang dimainkan peramban: Wedding March di v1, gamelan slendro di v2) |
+| Nama dalam aksara Jawa (v2) | `couple.*.aksara` |
 | Judul dan pratinjau saat tautan dibagikan | tag `<title>` dan `og:*` di `index.html` |
 
 Bagian galeri otomatis tersembunyi selama `photos.gallery` kosong. Bingkai foto mempelai menampilkan inisial selama `photo` kosong.
