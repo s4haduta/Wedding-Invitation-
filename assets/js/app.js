@@ -334,44 +334,50 @@
   var Music = (function () {
     var btn = $('#musicBtn'), playing = false;
     var audio, ctx, master, timer, nextT = 0, beat = 0;
-    // Lagu romantis ceria di C mayor, 116 ketuk/menit: petikan arpeggio, bas, dan melodi kotak musik.
-    var CHORDS = [ // [bas, empat nada arpeggio] per birama: C G Am F C G F G
-      [36, 60, 64, 67, 72], [43, 59, 62, 67, 74], [45, 57, 60, 64, 69], [41, 57, 60, 65, 69],
-      [36, 60, 64, 67, 72], [43, 59, 62, 67, 74], [41, 57, 60, 65, 69], [43, 59, 62, 67, 71]
-    ];
-    var ARP = [1, 3, 2, 3, 4, 3, 2, 3];
-    var TUNE = [ // delapan not perdelapanan per birama, 0 = diam
-      [76, 0, 79, 0, 76, 74, 72, 0], [74, 0, 79, 0, 71, 0, 74, 0],
-      [72, 0, 76, 0, 81, 79, 76, 0], [77, 0, 81, 0, 79, 77, 76, 74],
-      [76, 0, 79, 0, 84, 0, 79, 0], [74, 76, 74, 71, 67, 0, 71, 0],
-      [69, 0, 72, 0, 77, 0, 81, 0], [79, 0, 77, 0, 74, 0, 0, 0]
-    ];
+    // Canon in D (Johann Pachelbel, domain publik), diaransemen untuk kotak musik dan harpa.
+    // Satu putaran = 8 akor x 8 not perenambelasan. Tiap variasi ditulis sebagai [nada MIDI, panjang].
+    var BASS = [50, 45, 47, 42, 43, 38, 43, 45];
+    var TRIAD = [[62, 66, 69], [57, 61, 64], [59, 62, 66], [54, 57, 61], [55, 59, 62], [62, 66, 69], [55, 59, 62], [57, 61, 64]];
+    function line(notes) { // ubah daftar [nada, panjang] menjadi peta langkah -> not
+      var map = {}, at = 0;
+      notes.forEach(function (n) { map[at] = n; at += n[1]; });
+      return map;
+    }
+    function each(list, len) { return list.map(function (m) { return [m, len]; }); }
+    var V1 = line(each([78, 76, 74, 73, 71, 69, 71, 73], 8));
+    var V2 = line(each([74, 73, 71, 69, 67, 66, 67, 64], 8));
+    var V3 = line(each([74, 78, 81, 79, 78, 74, 78, 76, 74, 71, 74, 81, 79, 83, 81, 79], 4));
+    var V4 = line([
+      [81, 2], [78, 1], [79, 1], [81, 2], [78, 1], [79, 1], [81, 1], [69, 1], [71, 1], [73, 1], [74, 1], [76, 1], [78, 1], [79, 1],
+      [78, 2], [74, 1], [76, 1], [78, 2], [66, 1], [67, 1], [69, 1], [71, 1], [69, 1], [67, 1], [69, 1], [66, 1], [67, 1], [69, 1],
+      [67, 2], [71, 1], [69, 1], [67, 2], [66, 1], [64, 1], [66, 1], [64, 1], [62, 1], [64, 1], [66, 1], [67, 1], [69, 1], [71, 1],
+      [67, 2], [71, 1], [69, 1], [71, 2], [73, 1], [74, 1], [69, 1], [71, 1], [73, 1], [74, 1], [76, 1], [78, 1], [79, 1], [81, 1]
+    ]);
+    // urutan putaran: iringan saja, tema, tema berdua, variasi seperempatan, variasi lincah, lalu kembali ke tema
+    var ROUNDS = [[], [V1], [V1, V2], [V3, V2], [V4], [V4, V1], [V3]];
     function hz(m) { return 440 * Math.pow(2, (m - 69) / 12); }
     function note(type, f, t, vol, dur, partials) {
       (partials || [[1, 1]]).forEach(function (p) {
         var o = ctx.createOscillator(), g = ctx.createGain();
         o.type = type; o.frequency.value = f * p[0];
         g.gain.setValueAtTime(0.0001, t);
-        g.gain.exponentialRampToValueAtTime(vol * p[1], t + 0.01);
+        g.gain.exponentialRampToValueAtTime(vol * p[1], t + 0.012);
         g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
         o.connect(g); g.connect(master);
         o.start(t); o.stop(t + dur + 0.05);
       });
     }
     function schedule() {
-      var STEP = 60 / 116 / 2;
+      var STEP = 60 / 66 / 4;
       while (nextT < ctx.currentTime + 0.5) {
-        var i = beat % 8, bar = Math.floor(beat / 8) % 8, round = Math.floor(beat / 64);
-        var t = nextT + (i % 2 ? STEP * 0.14 : 0); // ayunan ringan supaya terasa riang
-        var ch = CHORDS[bar];
-        note('triangle', hz(ch[ARP[i]]), t, i % 4 ? 0.07 : 0.1, 0.5);                 // petikan
-        if (i === 0) note('sine', hz(ch[0]), t, 0.3, 0.9);                            // bas
-        if (i === 4) note('sine', hz(ch[0] + 7), t, 0.2, 0.6);
-        var m = TUNE[bar][i];
-        if (m && round > 0 && !(round % 3 === 0 && i % 2)) {                           // putaran pertama: iringan saja
-          note('sine', hz(m), t, 0.17, 1.3, [[1, 1], [2, .3], [4, .08]]);
-          if (round % 2 === 0 && i === 0) note('sine', hz(m - (bar === 2 || bar === 3 ? 3 : 4)), t, 0.07, 1.1);
-        }
+        var s = beat % 64, chord = Math.floor(s / 8), i = s % 8, round = Math.floor(beat / 64), t = nextT;
+        var voices = ROUNDS[round < ROUNDS.length ? round : 1 + (round - 1) % (ROUNDS.length - 1)];
+        if (i === 0) note('sine', hz(BASS[chord]), t, 0.34, STEP * 9);                              // bas
+        if (i % 2 === 0) note('triangle', hz(TRIAD[chord][[0, 1, 2, 1][i / 2]]), t, 0.06, 0.7);      // harpa
+        voices.forEach(function (v, k) {
+          var n = v[s];
+          if (n) note('sine', hz(n[0]), t, k ? 0.09 : 0.17, Math.max(0.9, n[1] * STEP * 1.25), [[1, 1], [2, .28], [4, .06]]);
+        });
         beat++; nextT += STEP;
       }
     }

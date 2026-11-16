@@ -103,7 +103,7 @@ window.INVITATION = {
   },
 
   music: {
-    // Path berkas musik (mis. 'assets/audio/lagu.mp3'). Kosong = lagu romantis ceria bawaan yang dimainkan langsung oleh peramban.
+    // Path berkas musik (mis. 'assets/audio/lagu.mp3'). Kosong = Canon in D (Pachelbel) yang dimainkan langsung oleh peramban.
     src: ''
   }
 };
