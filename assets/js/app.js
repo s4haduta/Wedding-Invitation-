@@ -333,33 +333,44 @@
   /* ---------- musik ---------- */
   var Music = (function () {
     var btn = $('#musicBtn'), playing = false;
-    var audio, ctx, master, timer, nextT = 0, beat = 0, pos = 5;
-    var SLENDRO = [0, 240, 480, 720, 960]; // laras slendro: lima nada berjarak hampir sama
-    function freq(deg) {
-      var oct = Math.floor(deg / 5), i = ((deg % 5) + 5) % 5;
-      return 233.08 * Math.pow(2, oct + SLENDRO[i] / 1200);
-    }
-    function strike(f, t, vol, dur) {
-      [[1, 1], [2.02, .22], [3.01, .07]].forEach(function (p) {
+    var audio, ctx, master, timer, nextT = 0, beat = 0;
+    // Lagu romantis ceria di C mayor, 116 ketuk/menit: petikan arpeggio, bas, dan melodi kotak musik.
+    var CHORDS = [ // [bas, empat nada arpeggio] per birama: C G Am F C G F G
+      [36, 60, 64, 67, 72], [43, 59, 62, 67, 74], [45, 57, 60, 64, 69], [41, 57, 60, 65, 69],
+      [36, 60, 64, 67, 72], [43, 59, 62, 67, 74], [41, 57, 60, 65, 69], [43, 59, 62, 67, 71]
+    ];
+    var ARP = [1, 3, 2, 3, 4, 3, 2, 3];
+    var TUNE = [ // delapan not perdelapanan per birama, 0 = diam
+      [76, 0, 79, 0, 76, 74, 72, 0], [74, 0, 79, 0, 71, 0, 74, 0],
+      [72, 0, 76, 0, 81, 79, 76, 0], [77, 0, 81, 0, 79, 77, 76, 74],
+      [76, 0, 79, 0, 84, 0, 79, 0], [74, 76, 74, 71, 67, 0, 71, 0],
+      [69, 0, 72, 0, 77, 0, 81, 0], [79, 0, 77, 0, 74, 0, 0, 0]
+    ];
+    function hz(m) { return 440 * Math.pow(2, (m - 69) / 12); }
+    function note(type, f, t, vol, dur, partials) {
+      (partials || [[1, 1]]).forEach(function (p) {
         var o = ctx.createOscillator(), g = ctx.createGain();
-        o.type = 'sine'; o.frequency.value = f * p[0];
+        o.type = type; o.frequency.value = f * p[0];
         g.gain.setValueAtTime(0.0001, t);
-        g.gain.exponentialRampToValueAtTime(vol * p[1], t + 0.012);
-        g.gain.exponentialRampToValueAtTime(0.0001, t + dur / p[0]);
+        g.gain.exponentialRampToValueAtTime(vol * p[1], t + 0.01);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
         o.connect(g); g.connect(master);
-        o.start(t); o.stop(t + dur / p[0] + 0.05);
+        o.start(t); o.stop(t + dur + 0.05);
       });
     }
     function schedule() {
-      var STEP = 0.66;
+      var STEP = 60 / 116 / 2;
       while (nextT < ctx.currentTime + 0.5) {
-        if (beat % 16 === 0) strike(freq(-10), nextT, 0.5, 9);          // gong
-        else if (beat % 8 === 0) strike(freq(-7), nextT, 0.3, 6);       // kempul
-        if (beat % 4 === 0) strike(freq(pos - 5), nextT, 0.22, 3.2);    // balungan
-        if (Math.random() < 0.82) {
-          pos = Math.max(1, Math.min(11, pos + [-2, -1, -1, 1, 1, 2][Math.floor(Math.random() * 6)]));
-          strike(freq(pos), nextT, 0.2, 2.4);
-          if (Math.random() < 0.28) strike(freq(pos + 2), nextT + STEP / 2, 0.11, 1.8);
+        var i = beat % 8, bar = Math.floor(beat / 8) % 8, round = Math.floor(beat / 64);
+        var t = nextT + (i % 2 ? STEP * 0.14 : 0); // ayunan ringan supaya terasa riang
+        var ch = CHORDS[bar];
+        note('triangle', hz(ch[ARP[i]]), t, i % 4 ? 0.07 : 0.1, 0.5);                 // petikan
+        if (i === 0) note('sine', hz(ch[0]), t, 0.3, 0.9);                            // bas
+        if (i === 4) note('sine', hz(ch[0] + 7), t, 0.2, 0.6);
+        var m = TUNE[bar][i];
+        if (m && round > 0 && !(round % 3 === 0 && i % 2)) {                           // putaran pertama: iringan saja
+          note('sine', hz(m), t, 0.17, 1.3, [[1, 1], [2, .3], [4, .08]]);
+          if (round % 2 === 0 && i === 0) note('sine', hz(m - (bar === 2 || bar === 3 ? 3 : 4)), t, 0.07, 1.1);
         }
         beat++; nextT += STEP;
       }
@@ -371,7 +382,7 @@
         ctx = new AC();
         master = ctx.createGain(); master.gain.value = 0.0001;
         var delay = ctx.createDelay(1), fb = ctx.createGain(), lp = ctx.createBiquadFilter();
-        delay.delayTime.value = 0.37; fb.gain.value = 0.36; lp.type = 'lowpass'; lp.frequency.value = 2200;
+        delay.delayTime.value = 0.39; fb.gain.value = 0.22; lp.type = 'lowpass'; lp.frequency.value = 2200;
         master.connect(ctx.destination);
         master.connect(delay); delay.connect(lp); lp.connect(fb); fb.connect(delay); lp.connect(ctx.destination);
       }
